@@ -1,8 +1,9 @@
 {
-  "name": "hackerite",
-  "fullName": "hackerite",
-  "description": "a basic add-on",
-  "author": "",
-  "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
-  "version": "0.1"
+    "name": "hackerite", 
+    "license": "MPL 1.1/GPL 2.0/LGPL 2.1", 
+    "author": "", 
+    "version": "0.1", 
+    "fullName": "hackerite", 
+    "id": "jid0-ZMNnXIwJD5XfBgfoTOIydhiIhK0", 
+    "description": "a basic add-on"
 }
