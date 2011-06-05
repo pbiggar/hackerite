@@ -1,5 +1,6 @@
 const widgets = require("widget");
 const tabs = require("tabs");
+const notificationBox = require("notification-box");
 
 var widget = widgets.Widget({
   id: "mozilla-link",
@@ -11,3 +12,5 @@ var widget = widgets.Widget({
 });
 
 console.log("The add-on is running.");
+
+var nb = notificationBox.NotificationBox("message", "id", "label");
