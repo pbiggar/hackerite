@@ -3,16 +3,23 @@ const data = require("self").data;
 const request = require("request");
 const notificationBox = require("notification-box");
 
+var blacklist = ['http://news.ycombinator.com', 'http://reddit.com'];
+
 
 tabs.on("ready", function onReady(tab) {
+  if (tab.url in blacklist)
+    return;
+
   get_ids(tab.url, function (ids) {
     if (ids.length > 0) {
-      get_data(ids[0], function (post) {
+      var latest = max(ids);
+      console.log(latest);
+      get_data(latest, function (post) {
 
-        for (var i in post) {
-          console.log(i);
-          console.log(post[i]);
-        }
+        var message = post.points
+            + ' | ' + post.title 
+            + ' | [' + post.postedBy + ']'
+            + ' | ' + post.postedAgo;
 
         var buttons = [{
           label: post.commentCount + ' comments',
@@ -20,7 +27,7 @@ tabs.on("ready", function onReady(tab) {
         }];
 
         var nb = notificationBox.NotificationBox(
-          post.title,
+          message,
           "id",
           data.url('images/ycombinator.ico'),
           buttons);
@@ -53,4 +60,8 @@ function req(url, callback) {
       }
     },
   }).get();
+}
+
+function max(arr) {
+  return Math.max.apply(Math, arr);
 }
