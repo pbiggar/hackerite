@@ -11,11 +11,10 @@ tabs.on("ready", function onReady(tab) {
     return;
 
   get_ids(tab.url, function (ids) {
+
     if (ids.length > 0) {
       var latest = max(ids);
-      console.log(latest);
       get_data(latest, function (post) {
-
         var message = post.points
             + ' | ' + post.title 
             + ' | [' + post.postedBy + ']'
