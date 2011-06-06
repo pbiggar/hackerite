@@ -46,26 +46,17 @@ require("xpcom").utils.defineLazyServiceGetter(
   "nsIWindowMediator"
 );
 
-let NotificationBox = function(message, id, image) {
+
+let NotificationBox = function(message, id, image, buttons) {
   var window = windowMediator.getMostRecentWindow("navigator:browser");
   var nb = window.gBrowser.getNotificationBox();
   var n = nb.getNotificationWithValue(id);
   if (n) {
     return n;
   } else {
-    var buttons = [{
-      label: 'Button',
-      accessKey: 'B',
-      popup: 'blockedPopupOptions',
-      callback: null
-    }];
-
     const priority = nb.PRIORITY_WARNING_MEDIUM;
     return nb.appendNotification(message, id, image, priority, buttons);
   }
 }
 
-exports.NotificationBox = function(options) {
-  NotificationBox(options);
-}
-exports.NotificationBox.prototype = NotificationBox.prototype;
+exports.NotificationBox = NotificationBox;
