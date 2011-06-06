@@ -22,10 +22,11 @@ tabs.on("ready", function onReady(tab) {
 
         var buttons = [{
           label: post.commentCount + ' comments',
-          callback: function () { goto_tab(post.id); },
+          callback: function () { goto_tab(tab, post.id); },
         }];
 
         var nb = notificationBox.NotificationBox(
+          tab,
           message,
           "id",
           data.url('images/ycombinator.ico'),
@@ -35,8 +36,11 @@ tabs.on("ready", function onReady(tab) {
   });
 });
 
-function goto_tab(id) {
-  tabs.activeTab.url = 'http://news.ycombinator.com/item?id=' + id;
+tabs.open('http://www.troyhunt.com/2011/06/brief-sony-password-analysis.html');
+tabs.open('http://matt-welsh.blogspot.com/2011/05/what-im-working-on-at-google-making.html');
+
+function goto_tab(tab, id) {
+  tab.url = 'http://news.ycombinator.com/item?id=' + id;
 }
 
 function get_ids(url, callback) {

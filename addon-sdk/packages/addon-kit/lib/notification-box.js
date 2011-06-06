@@ -47,9 +47,23 @@ require("xpcom").utils.defineLazyServiceGetter(
 );
 
 
-let NotificationBox = function(message, id, image, buttons) {
+let NotificationBox = function(tab, message, id, image, buttons) {
+  // TODO:
+  //   - dont use getMostRecentWindow
+  //   - dont use tab index
+  //
+  //   There's at least two race conditions here. If we change the window or
+  //   the tab numbering between sending the callback and opening the
+  //   notification, we'll open it on the wrong tab. I'm not sure there's any
+  //   other information I can use though to identify the tab (URL maybe
+  //   though).
+  //
+  //   Hmmm. Perhaps I can just cycle through all tabs/windows and find any
+  //   that use the URL we've just found...
+
   var window = windowMediator.getMostRecentWindow("navigator:browser");
-  var nb = window.gBrowser.getNotificationBox();
+
+  var nb = window.gBrowser.getNotificationBox(window.gBrowser.browsers[tab.index]);
   var n = nb.getNotificationWithValue(id);
   if (n) {
     return n;
