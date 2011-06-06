@@ -46,12 +46,12 @@ require("xpcom").utils.defineLazyServiceGetter(
   "nsIWindowMediator"
 );
 
-let NotificationBox = function(message, id, label) {
+let NotificationBox = function(message, id, image) {
   var window = windowMediator.getMostRecentWindow("navigator:browser");
   var nb = window.gBrowser.getNotificationBox();
   var n = nb.getNotificationWithValue(id);
   if (n) {
-    n.label = label;
+    return n;
   } else {
     var buttons = [{
       label: 'Button',
@@ -61,11 +61,7 @@ let NotificationBox = function(message, id, label) {
     }];
 
     const priority = nb.PRIORITY_WARNING_MEDIUM;
-    nb.appendNotification(message, id,
-      'chrome://browser/skin/Info.png',
-      priority, buttons);
-
-    n = nb.getNotificationWithValue(id);
+    return nb.appendNotification(message, id, image, priority, buttons);
   }
 }
 

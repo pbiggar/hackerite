@@ -1,4 +1,5 @@
 const tabs = require("tabs");
+const data = require("self").data;
 const request = require("request");
 const notificationBox = require("notification-box");
 
@@ -6,7 +7,12 @@ tabs.on("ready", function onReady(tab) {
   get_ids(tab.url, function (ids) {
     if (ids.length > 0) {
       get_data(ids[0], function (post) {
-        var nb = notificationBox.NotificationBox(post.title, "id", "label");
+        var nb = notificationBox.NotificationBox(
+          post.title,
+          "id",
+          data.url('images/ycombinator.ico'));
+
+        console.log(nb.image);
       });
     }
   });
