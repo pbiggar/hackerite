@@ -48,28 +48,33 @@ require("xpcom").utils.defineLazyServiceGetter(
 
 
 let NotificationBox = function(tab, message, id, image, buttons) {
-  // TODO:
-  //   - dont use getMostRecentWindow
-  //   - dont use tab index
+  // We don't have a very good way of relating the tab (which was given to use
+  // by a jetpack module) back to the real browser tab.  The only information
+  // we do have is the tabindex, but we don't even know what browser window it
+  // relates to. We could search for tabs with that index, but that's
+  // presumably also racy. If we change the window or the tab numbering between
+  // sending the callback and opening the notification, we might open the
+  // notification on the wrong tab.
   //
-  //   There's at least two race conditions here. If we change the window or
-  //   the tab numbering between sending the callback and opening the
-  //   notification, we'll open it on the wrong tab. I'm not sure there's any
-  //   other information I can use though to identify the tab (URL maybe
-  //   though).
-  //
-  //   Hmmm. Perhaps I can just cycle through all tabs/windows and find any
-  //   that use the URL we've just found...
-
-  var window = windowMediator.getMostRecentWindow("navigator:browser");
-
-  var nb = window.gBrowser.getNotificationBox(window.gBrowser.browsers[tab.index]);
-  var n = nb.getNotificationWithValue(id);
-  if (n) {
-    return n;
-  } else {
-    const priority = nb.PRIORITY_WARNING_MEDIUM;
-    return nb.appendNotification(message, id, image, priority, buttons);
+  // So this takes the very simple approach of just checking the url of every
+  // tab, and opening a notification if it uses the right url. Of course, we
+  // should only do that once because the user might have closed it.
+  
+  var enumerator = windowMediator.getEnumerator("navigator:browser");
+  while(enumerator.hasMoreElements()) {
+    var window = enumerator.getNext();
+    var bs = window.gBrowser.browsers;
+    for (var i = 0; i < bs.length; i++) {
+      if (bs[i].src == tab.url && !bs[i].hackerite_has_been_added) {
+        bs[i].hackerite_has_been_added = true;
+        var nb = window.gBrowser.getNotificationBox(bs[i]);
+        var n = nb.getNotificationWithValue(id);
+        if (!n) {
+          const priority = nb.PRIORITY_WARNING_MEDIUM;
+          nb.appendNotification(message, id, image, priority, buttons);
+        }
+      }
+    }
   }
 }
 
