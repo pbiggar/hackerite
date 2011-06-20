@@ -47,7 +47,7 @@ require("xpcom").utils.defineLazyServiceGetter(
 );
 
 
-let NotificationBox = function(tab, message, id, image, buttons) {
+let NotificationBox = function(url, message, id, image, buttons) {
   // We don't have a very good way of relating the tab (which was given to use
   // by a jetpack module) back to the real browser tab.  The only information
   // we do have is the tabindex, but we don't even know what browser window it
@@ -62,12 +62,16 @@ let NotificationBox = function(tab, message, id, image, buttons) {
   
   var enumerator = windowMediator.getEnumerator("navigator:browser");
   while(enumerator.hasMoreElements()) {
-    var window = enumerator.getNext();
-    var bs = window.gBrowser.browsers;
-    for (var i = 0; i < bs.length; i++) {
-      if (bs[i].src == tab.url && !bs[i].hackerite_has_been_added) {
-        bs[i].hackerite_has_been_added = true;
-        var nb = window.gBrowser.getNotificationBox(bs[i]);
+    var browser_window = enumerator.getNext();
+    var tab_browser = browser_window.gBrowser;
+
+    for (var i = 0; i < tab_browser.browsers.length; i++) {
+      var tab = tab_browser.getBrowserAtIndex(i);
+
+      if (url == tab.currentURI.spec && !tab.hackerite_has_been_added) {
+        tab.hackerite_has_been_added = true;
+
+        var nb = browser_window.gBrowser.getNotificationBox(tab);
         var n = nb.getNotificationWithValue(id);
         if (!n) {
           const priority = nb.PRIORITY_WARNING_MEDIUM;
