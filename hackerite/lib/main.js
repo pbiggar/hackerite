@@ -7,48 +7,45 @@ var blacklist = ['http://news.ycombinator.com', 'http://reddit.com'];
 
 
 tabs.on("ready", function onReady(tab) {
-  if (tab.url in blacklist)
+  if (blacklist.indexOf(tab.url) != -1)
     return;
 
-  get_ids(tab.url, function (ids) {
+  search(tab.url, function (result) {
 
-    if (ids.length > 0) {
-      var latest = max(ids);
-      get_data(latest, function (post) {
-        var message = post.points
-            + ' | ' + post.title 
-            + ' | [' + post.postedBy + ']'
-            + ' | ' + post.postedAgo;
+    if (result.results.length == 0)
+      return;
 
-        var buttons = [{
-          label: post.commentCount + ' comments',
-          callback: function () { goto_tab(tab, post.id); },
-        }];
+    var post = result.results[0].item;
 
-        var nb = notificationBox.NotificationBox(
-          tab,
-          message,
-          "id",
-          data.url('images/ycombinator.ico'),
-          buttons);
-      });
-    }
+    var message = post.points
+        + ' | ' + post.title 
+        + ' | [' + post.username + ']'
+        + ' | ' + post.create_ts;
+
+    var buttons = [{
+      label: post.commentCount + ' comments',
+      callback: function () { goto_tab(tab, post.id); },
+    }];
+
+    var nb = notificationBox.NotificationBox(
+      tab.url,
+      message,
+      "id",
+      data.url('images/ycombinator.ico'),
+      buttons);
   });
 });
 
-tabs.open('http://www.troyhunt.com/2011/06/brief-sony-password-analysis.html');
+//tabs.open('http://www.troyhunt.com/2011/06/brief-sony-password-analysis.html');
 tabs.open('http://matt-welsh.blogspot.com/2011/05/what-im-working-on-at-google-making.html');
 
 function goto_tab(tab, id) {
   tab.url = 'http://news.ycombinator.com/item?id=' + id;
 }
 
-function get_ids(url, callback) {
-  req('http://api.ihackernews.com/getid?url=' + encodeURI(url), callback);
-}
-
-function get_data(id, callback) {
-  req('http://api.ihackernews.com/post/' + id, callback);
+function search(url, callback) {
+  var url = encodeURI(url);
+  req('http://api.thriftdb.com/api.hnsearch.com/items/_search?q=' + url + '&filter{fields{url:' + url + '}}&sortby=create_ts desc&limit=1', callback)
 }
 
 function req(url, callback) {
@@ -65,6 +62,3 @@ function req(url, callback) {
   }).get();
 }
 
-function max(arr) {
-  return Math.max.apply(Math, arr);
-}
