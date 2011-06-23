@@ -43,8 +43,6 @@ tabs.on("ready", function onReady(tab) {
   });
 });
 
-tabs.open('http://matt-welsh.blogspot.com/2011/05/what-im-working-on-at-google-making.html');
-
 function goto_tab(tab, id) {
   tab.url = 'http://news.ycombinator.com/item?id=' + id;
 }
