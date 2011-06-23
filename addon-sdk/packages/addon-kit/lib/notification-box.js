@@ -69,7 +69,7 @@ let NotificationBox = function(url, message, id, image, buttons) {
       var tab = tab_browser.getBrowserAtIndex(i);
 
       if (url == tab.currentURI.spec && !tab.hackerite_has_been_added) {
-        tab.hackerite_has_been_added = true;
+//        tab.hackerite_has_been_added = true;
 
         var nb = browser_window.gBrowser.getNotificationBox(tab);
         var n = nb.getNotificationWithValue(id);

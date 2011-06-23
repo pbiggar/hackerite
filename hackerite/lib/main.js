@@ -11,11 +11,13 @@ tabs.on("ready", function onReady(tab) {
     return;
 
   search(tab.url, function (result) {
+    console.log(result.results.length);
 
     if (result.results.length == 0)
       return;
 
     var post = result.results[0].item;
+    for (var i in post) { console.log(i); }
 
     var message = post.points
         + ' | ' + post.title 
@@ -23,7 +25,7 @@ tabs.on("ready", function onReady(tab) {
         + ' | ' + post.create_ts;
 
     var buttons = [{
-      label: post.commentCount + ' comments',
+      label: post.num_comments + ' comments',
       callback: function () { goto_tab(tab, post.id); },
     }];
 
@@ -44,8 +46,9 @@ function goto_tab(tab, id) {
 }
 
 function search(url, callback) {
-  var url = encodeURI(url);
-  req('http://api.thriftdb.com/api.hnsearch.com/items/_search?q=' + url + '&filter{fields{url:' + url + '}}&sortby=create_ts desc&limit=1', callback)
+  url = encodeURIComponent(url);
+  console.log(url);
+  req('http://api.thriftdb.com/api.hnsearch.com/items/_search?q=' + url + '&filter[fields][url]=' + url + '&sortby=create_ts desc&limit=1&filter[fields][type]=submission', callback)
 }
 
 function req(url, callback) {
