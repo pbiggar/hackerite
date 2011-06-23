@@ -3,10 +3,13 @@ const data = require("self").data;
 const request = require("request");
 const notificationBox = require("notification-box");
 
-var blacklist = ['http://news.ycombinator.com', 'http://reddit.com'];
+// Stories that point to front-pages of large sites are largely useless.
+var blacklist = ['http://news.ycombinator.com/', 'http://www.reddit.com/', 'http://reddit.com/'];
 
 
 tabs.on("ready", function onReady(tab) {
+
+  // Skip blacklisted sites.
   if (blacklist.indexOf(tab.url) != -1)
     return;
 
@@ -16,19 +19,21 @@ tabs.on("ready", function onReady(tab) {
     if (result.results.length == 0)
       return;
 
+    // The query is ordered, so the 0th story is the latest.
     var post = result.results[0].item;
-    for (var i in post) { console.log(i); }
 
     var message = post.points
         + ' | ' + post.title 
-        + ' | [' + post.username + ']'
+        + ' | ' + post.username
         + ' | ' + post.create_ts;
 
+    // "#n comments" button
     var buttons = [{
       label: post.num_comments + ' comments',
       callback: function () { goto_tab(tab, post.id); },
     }];
 
+    // Bring up the notifiation window
     var nb = notificationBox.NotificationBox(
       tab.url,
       message,
@@ -38,7 +43,6 @@ tabs.on("ready", function onReady(tab) {
   });
 });
 
-//tabs.open('http://www.troyhunt.com/2011/06/brief-sony-password-analysis.html');
 tabs.open('http://matt-welsh.blogspot.com/2011/05/what-im-working-on-at-google-making.html');
 
 function goto_tab(tab, id) {
@@ -47,8 +51,13 @@ function goto_tab(tab, id) {
 
 function search(url, callback) {
   url = encodeURIComponent(url);
-  console.log(url);
-  req('http://api.thriftdb.com/api.hnsearch.com/items/_search?q=' + url + '&filter[fields][url]=' + url + '&sortby=create_ts desc&limit=1&filter[fields][type]=submission', callback)
+  req('http://api.thriftdb.com/api.hnsearch.com/items/_search'
+    + '?q=' + url 
+    + '&filter[fields][url]=' + url
+    + '&sortby=create_ts desc'
+    + '&limit=1'
+    + '&filter[fields][type]=submission'
+    , callback)
 }
 
 function req(url, callback) {
