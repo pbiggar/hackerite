@@ -50,10 +50,9 @@ function goto_tab(tab, id) {
 }
 
 function search(url, callback) {
-  url = encodeURIComponent(url);
   req('http://api.thriftdb.com/api.hnsearch.com/items/_search'
-    + '?q=' + url 
-    + '&filter[fields][url]=' + url
+    + '?q=' + get_domain(url) 
+    + '&filter[fields][url]=' + encodeURIComponent(url)
     + '&sortby=create_ts desc'
     + '&limit=1'
     + '&filter[fields][type]=submission'
@@ -74,3 +73,6 @@ function req(url, callback) {
   }).get();
 }
 
+function get_domain(url) {
+     return url.match(/:\/\/(.[^/]+)/)[1];
+}
