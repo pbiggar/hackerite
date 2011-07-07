@@ -11,7 +11,7 @@ INDEX_PAGE = '/static-files/base.html'
 BASE_URL_INSERTION_POINT = '<base '
 HIGH_LEVEL_PACKAGE_SUMMARIES = '<li id="high-level-package-summaries">'
 LOW_LEVEL_PACKAGE_SUMMARIES = '<li id="low-level-package-summaries">'
-CONTENT_ID = '<div id="right-column">'
+CONTENT_ID = '<div id="main-content">'
 TITLE_ID = '<title>'
 DEFAULT_TITLE = 'Add-on SDK Documentation'
 
@@ -41,6 +41,11 @@ def get_documented_modules(root, package_name, modules_json):
         path = os.path.join(*module)
         if module_md_exists(module_md_root, path):
             documented_modules.append(module)
+    if package_name == "addon-kit":
+        # hack for bug 664001, self-maker.js is in api-utils, self.md is in
+        # addon-kit. Real fix is for this function to look for all .md files,
+        # not for .js files with matching .md file in the same package.
+        documented_modules.append(["self"])
     return doc_prefix, documented_modules
 
 def module_md_exists(root, module_name):

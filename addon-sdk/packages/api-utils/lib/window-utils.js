@@ -56,6 +56,20 @@ var windowIterator = exports.windowIterator = function windowIterator() {
     yield winEnum.getNext().QueryInterface(Ci.nsIDOMWindow);
 };
 
+/**
+ * An iterator for browser windows currently open in the application.
+ * @returns {Function}
+ *    A generator that yields browser windows exposing the `nsIDOMWindow`
+ *    interface.
+ */
+function browserWindowIterator() {
+  for each (let window in windowIterator()) {
+    if (isBrowser(window))
+      yield window;
+  }
+}
+exports.browserWindowIterator = browserWindowIterator;
+
 var WindowTracker = exports.WindowTracker = function WindowTracker(delegate) {
   this.delegate = delegate;
   this._loadingWindows = [];
@@ -89,10 +103,12 @@ WindowTracker.prototype = {
   },
 
   _unregWindow: function _unregWindow(window) {
-    if (window.document.readyState == "complete")
-      this.delegate.onUntrack(window);
-    else
+    if (window.document.readyState == "complete") {
+      if (this.delegate.onUntrack)
+        this.delegate.onUntrack(window);
+    } else {
       this._unregLoadingWindow(window);
+    }
   },
 
   unload: function unload() {
@@ -168,6 +184,27 @@ exports.__defineGetter__("activeBrowserWindow", function() {
          .getMostRecentWindow("navigator:browser");
 });
 
+/**
+ * Returns the ID of the window's current inner window.
+ */
+exports.getInnerId = function getInnerId(window) {
+  return window.QueryInterface(Ci.nsIInterfaceRequestor).
+                getInterface(Ci.nsIDOMWindowUtils).currentInnerWindowID;
+};
+
+/**
+ * Returns the ID of the window's outer window.
+ */
+exports.getOuterId = function getOuterId(window) {
+  return window.QueryInterface(Ci.nsIInterfaceRequestor).
+                getInterface(Ci.nsIDOMWindowUtils).outerWindowID;
+};
+
+function isBrowser(window) {
+  return window.document.documentElement.getAttribute("windowtype") ===
+         "navigator:browser";
+};
+exports.isBrowser = isBrowser;
 
 require("unload").when(
   function() {

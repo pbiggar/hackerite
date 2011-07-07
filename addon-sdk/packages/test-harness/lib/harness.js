@@ -280,8 +280,9 @@ var POINTLESS_ERRORS = [
 var consoleListener = {
   errorsLogged: 0,
   observe: function(object) {
-    if (object instanceof Ci.nsIScriptError)
-      this.errorsLogged++;
+    if (!(object instanceof Ci.nsIScriptError))
+      return;
+    this.errorsLogged++;
     var message = object.QueryInterface(Ci.nsIConsoleMessage).message;
     var pointless = [err for each (err in POINTLESS_ERRORS)
                          if (message.indexOf(err) == 0)];
@@ -343,6 +344,10 @@ var runTests = exports.runTests = function runTests(options) {
 
     sandbox = new cuddlefish.Loader({console: console,
                                      globals: globals,
+                                     metadata: packaging.options.metadata,
+                                     jetpackID: packaging.options.jetpackID,
+                                     uriPrefix: packaging.options.uriPrefix,
+                                     name: packaging.options.name,
                                      packaging: packaging,
                                      __proto__: options});
     nextIteration();
