@@ -68,15 +68,12 @@ let NotificationBox = function(url, message, id, image, buttons) {
     for (var i = 0; i < tab_browser.browsers.length; i++) {
       var tab = tab_browser.getBrowserAtIndex(i);
 
-      if (url == tab.currentURI.spec && !tab.hackerite_has_been_added) {
-//        tab.hackerite_has_been_added = true;
+      if (url == tab.currentURI.spec) {
 
         var nb = browser_window.gBrowser.getNotificationBox(tab);
-        var n = nb.getNotificationWithValue(id);
-        if (!n) {
-          const priority = nb.PRIORITY_WARNING_MEDIUM;
-          nb.appendNotification(message, id, image, priority, buttons);
-        }
+        const priority = nb.PRIORITY_INFO_MEDIUM;
+        var notification = nb.appendNotification(message, id, image, priority, buttons);
+        return notification;
       }
     }
   }
