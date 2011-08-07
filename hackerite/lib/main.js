@@ -30,20 +30,35 @@ tabs.on("ready", function onReady(tab) {
     // "#n comments" button
     var buttons = [{
       label: post.num_comments + ' comments',
-      callback: function () { goto_tab(tab, post.id); },
-    }];
+      callback: function () { goto_story(tab, post.id); },
+    },
+    {
+      label: "\u21E7",
+    },
+    {
+      label: "\u21E9",
+    },
+    {
+      label: "\u2690",
+    },
+    ];
 
     // Bring up the notifiation window
-    var nb = notificationBox.NotificationBox(
+    var notification = new notificationBox.NotificationBox(
       tab.url,
       message,
-      "id",
+      "hackerite",
       data.url('images/ycombinator.ico'),
       buttons);
+
+    // Allow the buttons to be as small as their contents
+    notification.childNodes[1].setAttribute('style', 'min-width: 0px;');
+    notification.childNodes[2].setAttribute('style', 'min-width: 0px;');
+    notification.childNodes[3].setAttribute('style', 'min-width: 0px;');
   });
 });
 
-function goto_tab(tab, id) {
+function goto_story(tab, id) {
   tab.url = 'http://news.ycombinator.com/item?id=' + id;
 }
 
