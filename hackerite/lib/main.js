@@ -48,13 +48,14 @@ function goto_tab(tab, id) {
 }
 
 function search(url, callback) {
-  req('http://api.thriftdb.com/api.hnsearch.com/items/_search'
-    + '?q=' + get_domain(url) 
+  var endpoint = 
+      'http://api.thriftdb.com/api.hnsearch.com/items/_search?'
     + '&filter[fields][url]=' + encodeURIComponent(url)
     + '&sortby=create_ts desc'
     + '&limit=1'
     + '&filter[fields][type]=submission'
-    , callback)
+    ;
+  req(endpoint, callback);
 }
 
 function req(url, callback) {
@@ -69,10 +70,6 @@ function req(url, callback) {
       }
     },
   }).get();
-}
-
-function get_domain(url) {
-     return url.match(/:\/\/(.[^/]+)/)[1];
 }
 
 // Stolen and tweaked from http://ejohn.org/files/pretty.js
