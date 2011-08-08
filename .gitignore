@@ -1,2 +1,6 @@
 *.pyc
 hackerite/hackerite.xpi
+x
+socialite
+hackerite/lib/main.js
+addon-sdk/packages/addon-kit/lib/notification-box.js
