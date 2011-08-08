@@ -21,13 +21,11 @@ tabs.on "ready", onReady = (tab) ->
     # The query is ordered, so the 0th story is the latest.
     post = result.results[0].item
 
-    message = post.points +
-      " | " + post.title +
-      " | " + post.username +
-      " | " + pretty_date(post.create_ts)
+    date = pretty_date(post.create_ts)
+    message = "#{post.points} | #{post.title} | #{post.username} | #{date}"
 
     buttons = [
-      label: post.num_comments + " comments"
+      label: "#{post.num_comments} comments"
       style: "min-width: 0px;"
       callback: ->
         goto_story tab, post.id
@@ -36,7 +34,7 @@ tabs.on "ready", onReady = (tab) ->
       style: "min-width: 0px;"
       callback: ->
         vote post.id, "up"
-    ,
+#    ,
 #     # FIXME: Do stories even have a downvote?
 #     label: "\u21E9", # down
 #     style: 'min-width: 0px;'
@@ -58,18 +56,21 @@ tabs.on "ready", onReady = (tab) ->
       "hackerite",
       data.url("images/ycombinator.ico"), buttons)
 
+
 goto_story = (tab, id) ->
   tab.url = "http://news.ycombinator.com/item?id=" + id
 
+
 vote = (id, dir) ->
-  throw "Invalid direction: " + dir if dir != "up" and dir != "down"
+  if dir != "up" and dir != "down"
+    throw "Invalid direction: " + dir
 
   # On HN itself, there are 'auth' and 'by' fields, but when I manually
   # omitted them, they didn't appear to matter.
 
   endpoint = "http://news.ycombinator.com/vote?" +
-    "&for=" + id +
-    "&dir=" + dir +
+    "&for=#{id}" +
+    "&dir=#{dir}" +
     "&whence=hackerite"
 
   req endpoint
@@ -78,11 +79,13 @@ vote = (id, dir) ->
 search = (url, callback) ->
   endpoint = "http://api.thriftdb.com/api.hnsearch.com/items/_search?" +
     "&filter[fields][url]=" + encodeURIComponent(url) +
-    "&sortby=create_ts desc" + "&limit=1" +
+    "&sortby=create_ts desc" +
+    "&limit=1" +
     "&filter[fields][type]=submission"
 
   console.log endpoint + "&pretty_print=true"
   req endpoint, callback
+
 
 req = (url, callback) ->
   request.Request(
@@ -91,7 +94,7 @@ req = (url, callback) ->
      if response.status == 200
         callback response.json if callback
       else
-        console.log "Error (" + response.status + ") in response: " + response.text
+        console.log "Error (#{response.status}) in response: #{response.text}"
   ).get()
 
 
@@ -99,18 +102,22 @@ req = (url, callback) ->
 pretty_date = (time) ->
   date = new Date(time)
   diff = ((new Date()).getTime() - date.getTime() / 1000)
-  day_diff = Math.floor(diff / 86400)
+  days = Math.floor(diff / 86400)
 
-  return date or time if isNaN(day_diff)
+  return date or time if isNaN(days)
 
-  if day_diff == 0
+  if days == 0
     return "just now" if diff < 60
-    return "1 minute ago" if diff < 120
-    return Math.floor(diff / 60) + " minutes ago" if diff < 3600
-    return "1 hour ago" if diff < 7200
-    return Math.floor(diff / 3600) + " hours ago" if diff < 172800
 
-  return "Yesterday" if day_diff == 1
-  return day_diff + " days ago"
+    return "1 minute ago" if diff < 120
+    minutes = Math.floor(diff / 60)
+    return  "#{minutes} minutes ago" if diff < 3600
+
+    return "1 hour ago" if diff < 7200
+    hours = Math.floor(diff / 3600)
+    return "#{hours} hours ago" if diff < 172800
+
+  return "Yesterday" if days == 1
+  return "#{days} days ago"
 
 
