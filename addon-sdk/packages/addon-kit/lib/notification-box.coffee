@@ -45,7 +45,51 @@ require("xpcom").utils.defineLazyServiceGetter(
   "@mozilla.org/appshell/window-mediator;1",
   "nsIWindowMediator")
 
+###
+  The notification bar takes what are essentially descriptors, but the
+  operations are on XUL elements, so abstract all this.
+###
+
+dump_obj = (o) ->
+  console.log("dumping")
+  for k,v of o
+    console.log("#{k}: #{v}")
+
+class Button
+
+  constructor: (desc) ->
+
+    # Coffeescript doesn't do getters and setters, so do them manually
+    @.__defineGetter__ "style", () =>
+      @_style
+    @.__defineSetter__ "style", (@_style) =>
+      @.setXulStyle()
+
+    @.__defineGetter__ "xulElement", () =>
+      @_xulElement
+    @.__defineSetter__ "xulElement", (@_xulElement) =>
+      @.setXulStyle()
+
+    # Split out our attributes from the descriptor
+    @desc = {}
+    for k,v of desc
+      if @.isPartOfDescriptor(k)
+        @desc[k] = v
+
+    @style = desc.style
+
+
+  isPartOfDescriptor: (key) ->
+    return key in ["label", 'popup', 'callback', "accessKey"]
+
+  setXulStyle: () ->
+    if @xulElement
+      @xulElement.setAttribute "style", @_style
+
+
+
 exports.NotificationBox = (url, message, id, image, buttons) ->
+
   # We don't have a very good way of relating the tab (which was given to use
   # by a jetpack module) back to the real browser tab.  The only information
   # we do have is the tabindex, but we don't even know what browser window it
@@ -68,19 +112,16 @@ exports.NotificationBox = (url, message, id, image, buttons) ->
 
       if url == tab.currentURI.spec
 
-        # Extract the button's styles
-        styles = []
-        for j of buttons
-          styles[j] = buttons[j].style
-          delete (buttons[j].style)
-
         # Create the notification
         nb = browser_window.gBrowser.getNotificationBox(tab)
         priority = nb.PRIORITY_INFO_MEDIUM
-        notification = nb.appendNotification(message, id, image, priority, buttons)
+        buttons = (new Button(b) for b in buttons)
+        descs = (b.desc for b in buttons)
+        notification = nb.appendNotification(message, id, image, priority, descs)
+        notification.buttons = buttons
 
-        # Add the styles to the buttons
-        for j of styles
-          notification.childNodes[j].setAttribute "style", styles[j]
+        # Store it so buttons can be updated dynamically.
+        for j in [0..descs.length-1]
+          buttons[j].xulElement = notification.childNodes[j]
 
         return notification
