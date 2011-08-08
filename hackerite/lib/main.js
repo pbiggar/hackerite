@@ -4,7 +4,8 @@ const request = require("request");
 const notificationBox = require("notification-box");
 
 // Stories that point to front-pages of large sites are largely useless.
-var blacklist = ['http://news.ycombinator.com/', 'http://www.reddit.com/', 'http://reddit.com/'];
+var blacklist = []; // make it easy to test using reddit
+//var blacklist = ['http://news.ycombinator.com/', 'http://www.reddit.com/', 'http://reddit.com/'];
 
 
 tabs.on("ready", function onReady(tab) {
@@ -28,18 +29,23 @@ tabs.on("ready", function onReady(tab) {
         + ' | ' + pretty_date(post.create_ts);
 
     // "#n comments" button
-    var buttons = [{
+    var buttons = [
+    {
       label: post.num_comments + ' comments',
       callback: function () { goto_story(tab, post.id); },
     },
     {
-      label: "\u21E7",
+      label: "\u21E7", // up
+      callback: function () { vote(post.id, "up"); },
     },
     {
-      label: "\u21E9",
+      label: "\u21E9", // down
     },
     {
-      label: "\u2690",
+      label: "\u2690", // flag
+    },
+    {
+      label: "\u20E0", // ignore
     },
     ];
 
@@ -55,11 +61,27 @@ tabs.on("ready", function onReady(tab) {
     notification.childNodes[1].setAttribute('style', 'min-width: 0px;');
     notification.childNodes[2].setAttribute('style', 'min-width: 0px;');
     notification.childNodes[3].setAttribute('style', 'min-width: 0px;');
+    notification.childNodes[4].setAttribute('style', 'min-width: 0px;');
   });
 });
 
 function goto_story(tab, id) {
   tab.url = 'http://news.ycombinator.com/item?id=' + id;
+}
+
+function vote(id, dir) {
+  if (dir != "up" && dir != "down")
+    throw "Invalid direction: " + dir
+
+  // On HN itself, there are 'auth' and 'by' fields, but when I manually
+  // omitted them, they didn't appear to matter.
+
+  var endpoint = 'http://news.ycombinator.com/vote?' +
+      '&for=' + id +
+      '&dir=' + dir +
+      '&whence=hackerite';
+
+  req(endpoint);
 }
 
 function search(url, callback) {
@@ -70,6 +92,9 @@ function search(url, callback) {
     + '&limit=1'
     + '&filter[fields][type]=submission'
     ;
+
+  console.log(endpoint + '&pretty_print=true');
+
   req(endpoint, callback);
 }
 
@@ -78,7 +103,9 @@ function req(url, callback) {
     url: url,
     onComplete: function (response) {
       if (response.status == 200) {
-        callback(response.json);
+        if (callback) {
+          callback(response.json);
+        }
       }
       else {
         console.log('Error (' + response.status + ') in response: ' + response.text);
