@@ -38,8 +38,15 @@ tabs.on("ready", function onReady(tab) {
       label: "\u21E7", // up
       callback: function () { vote(post.id, "up"); },
     },
+  /*
+   * FIXME:
+   *    flag: I don't understand how it works, so disable.
+   *    downvote: I can't test this, and amn't sure there is even a downvote option on stories.
+   *    ignore: not implemented yet.
     {
+
       label: "\u21E9", // down
+      callback: function () { vote(post.id, "down"); },
     },
     {
       label: "\u2690", // flag
@@ -47,6 +54,7 @@ tabs.on("ready", function onReady(tab) {
     {
       label: "\u20E0", // ignore
     },
+  */
     ];
 
     // Bring up the notifiation window
