@@ -101,7 +101,7 @@ req = (url, callback) ->
 # Stolen and tweaked from http://ejohn.org/files/pretty.js
 pretty_date = (time) ->
   date = new Date(time)
-  diff = ((new Date()).getTime() - date.getTime() / 1000)
+  diff = ((new Date()).getTime() - date.getTime()) / 1000
   days = Math.floor(diff / 86400)
 
   return date or time if isNaN(days)
