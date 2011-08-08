@@ -33,10 +33,12 @@ tabs.on("ready", function onReady(tab) {
     {
       label: post.num_comments + ' comments',
       callback: function () { goto_story(tab, post.id); },
+      style: 'min-width: 0px;',
     },
     {
       label: "\u21E7", // up
       callback: function () { vote(post.id, "up"); },
+      style: 'min-width: 0px;',
     },
   /*
    * FIXME:
@@ -47,12 +49,15 @@ tabs.on("ready", function onReady(tab) {
 
       label: "\u21E9", // down
       callback: function () { vote(post.id, "down"); },
+      style: 'min-width: 0px;',
     },
     {
       label: "\u2690", // flag
+      style: 'min-width: 0px;',
     },
     {
       label: "\u20E0", // ignore
+      style: 'min-width: 0px;',
     },
   */
     ];
@@ -64,12 +69,6 @@ tabs.on("ready", function onReady(tab) {
       "hackerite",
       data.url('images/ycombinator.ico'),
       buttons);
-
-    // Allow the buttons to be as small as their contents
-    notification.childNodes[1].setAttribute('style', 'min-width: 0px;');
-    notification.childNodes[2].setAttribute('style', 'min-width: 0px;');
-    notification.childNodes[3].setAttribute('style', 'min-width: 0px;');
-    notification.childNodes[4].setAttribute('style', 'min-width: 0px;');
   });
 });
 

@@ -70,9 +70,22 @@ let NotificationBox = function(url, message, id, image, buttons) {
 
       if (url == tab.currentURI.spec) {
 
+        // Extract the button's styles
+        var styles = [];
+        for (var j in buttons) {
+          styles[j] = buttons[j].style;
+          delete (buttons[j].style);
+        }
+
+        // Create the notification
         var nb = browser_window.gBrowser.getNotificationBox(tab);
         const priority = nb.PRIORITY_INFO_MEDIUM;
         var notification = nb.appendNotification(message, id, image, priority, buttons);
+
+        // Add the styles to the buttons
+        for (var j in styles) {
+          notification.childNodes[j].setAttribute('style', styles[j]);
+        }
         return notification;
       }
     }
