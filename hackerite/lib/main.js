@@ -40,26 +40,24 @@ tabs.on("ready", function onReady(tab) {
       callback: function () { vote(post.id, "up"); },
       style: 'min-width: 0px;',
     },
-  /*
-   * FIXME:
-   *    flag: I don't understand how it works, so disable.
-   *    downvote: I can't test this, and amn't sure there is even a downvote option on stories.
-   *    ignore: not implemented yet.
+/*
     {
-
+      // FIXME: Do stories even have a downvote?
       label: "\u21E9", // down
       callback: function () { vote(post.id, "down"); },
       style: 'min-width: 0px;',
     },
     {
+      // FIXME: how does the fnid work?
       label: "\u2690", // flag
       style: 'min-width: 0px;',
     },
     {
+      // FIXME: not implemented yet.
       label: "\u20E0", // ignore
       style: 'min-width: 0px;',
     },
-  */
+*/
     ];
 
     // Bring up the notifiation window
@@ -88,6 +86,7 @@ function vote(id, dir) {
       '&dir=' + dir +
       '&whence=hackerite';
 
+  // TODO: change the style to show it's voted for already
   req(endpoint);
 }
 
