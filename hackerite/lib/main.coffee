@@ -37,20 +37,20 @@ tabs.on "ready", onReady = (tab) ->
       callback: ->
         vote post.id, "up"
     ,
-      # FIXME: Do stories even have a downvote?
-      label: "\u21E9", # down
-      style: 'min-width: 0px;'
-      callback: ->
-        vote post.id, "down"
-    ,
-      # FIXME: how does the fnid work?
-      label: "\u2690", # flag
-      style: 'min-width: 0px;'
-    ,
-      # FIXME: not implemented yet.
-      label: "\u20E0", # ignore
-      style: 'min-width: 0px;'
-     ]
+#     # FIXME: Do stories even have a downvote?
+#     label: "\u21E9", # down
+#     style: 'min-width: 0px;'
+#     callback: ->
+#       vote post.id, "down"
+#   ,
+#     # FIXME: how does the fnid work?
+#     label: "\u2690", # flag
+#     style: 'min-width: 0px;'
+#   ,
+#     # FIXME: not implemented yet.
+#     label: "\u20E0", # ignore
+#     style: 'min-width: 0px;'
+    ]
 
     # Bring up the notifiation window
     notification = new notificationBox.NotificationBox(tab.url,
@@ -103,7 +103,7 @@ pretty_date = (time) ->
 
   return date or time if isNaN(day_diff)
 
- if day_diff == 0
+  if day_diff == 0
     return "just now" if diff < 60
     return "1 minute ago" if diff < 120
     return Math.floor(diff / 60) + " minutes ago" if diff < 3600
