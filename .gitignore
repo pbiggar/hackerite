@@ -3,4 +3,5 @@ hackerite/hackerite.xpi
 x
 socialite
 hackerite/lib/main.js
+hackerite/lib/blacklist.js
 addon-sdk/packages/addon-kit/lib/notification-box.js

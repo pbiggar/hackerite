@@ -2,16 +2,13 @@ tabs = require("tabs")
 data = require("self").data
 request = require("request")
 notificationBox = require("notification-box")
-
-# Stories that point to front-pages of large sites are largely useless.
-blacklist = []; # make it easy to test using reddit
-#blacklist = ['http://news.ycombinator.com/', 'http://www.reddit.com/', 'http://reddit.com/']
+blacklist = require("blacklist")
 
 
 tabs.on "ready", onReady = (tab) ->
 
   # Skip blacklisted sites.
-  return unless blacklist.indexOf(tab.url) == -1
+  return if blacklist.is_blacklisted(tab.url)
 
   search tab.url, (result) ->
     console.log result.results.length
@@ -44,10 +41,11 @@ tabs.on "ready", onReady = (tab) ->
 #     # FIXME: how does the fnid work?
 #     label: "\u2690", # flag
 #     style: 'min-width: 0px;'
-#   ,
-#     # FIXME: not implemented yet.
-#     label: "\u20E0", # ignore
-#     style: 'min-width: 0px;'
+    ,
+      label: "\u20E0", # ignore
+      style: 'min-width: 0px;'
+      callback: ->
+        blacklist.mark(tab.url)
     ]
 
     # Bring up the notifiation window
@@ -61,7 +59,7 @@ goto_story = (tab, id) ->
   tab.url = "http://news.ycombinator.com/item?id=" + id
 
 
-vote = (id, dir) ->
+vote = (id, dir, callback) ->
   if dir != "up" and dir != "down"
     throw "Invalid direction: " + dir
 

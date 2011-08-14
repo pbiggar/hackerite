@@ -1,7 +1,7 @@
 
 .PHONY: run
 
-COFFEE_FILES = addon-sdk/packages/addon-kit/lib/notification-box.cs hackerite/lib/main.cs
+COFFEE_FILES = addon-sdk/packages/addon-kit/lib/notification-box.coffee hackerite/lib/main.coffee hackerite/lib/blacklist.coffee
 
 JS_FILES = $(addsuffix .js, $(basename $(COFFEE_FILES)))
 
